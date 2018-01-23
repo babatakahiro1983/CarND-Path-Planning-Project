@@ -264,7 +264,7 @@ int main() {
 
 					check_car_s += ((double)prev_size * 0.02 * check_speed);
 
-					if ((check_car_s > car_s) && (check_car_s - car_s) < 30)
+					if ((check_car_s > car_s) && ((check_car_s - car_s) < 30))
 					{
 						//ref_vel = 29.5;
 						too_close = true;
@@ -337,7 +337,7 @@ int main() {
 				double shift_y = ptsy[i] - ref_y;
 
 				ptsx[i] = (shift_x * cos(0 - ref_yaw) - shift_y * sin(0 - ref_yaw));
-				ptsy[i] = (shift_x * sin(0 - ref_yaw) - shift_y * cos(0 - ref_yaw));
+				ptsy[i] = (shift_x * sin(0 - ref_yaw) + shift_y * cos(0 - ref_yaw));
 			}
 
 
