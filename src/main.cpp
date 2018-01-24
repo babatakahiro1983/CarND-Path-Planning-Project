@@ -9,6 +9,7 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
 #include "spline.h"
+#include <stdlib.h>
 
 using namespace std;
 
@@ -256,6 +257,7 @@ int main() {
 			}
 
 			bool too_close = false;
+			double target_velocity = ref_vel;
 
 			// Object detection surround the vehicle
 			for (int i = 0; i < sensor_fusion.size(); i++) {
@@ -272,14 +274,17 @@ int main() {
 
 					check_car_s += ((double)prev_size * 0.02 * check_speed);
 
+					double target_distance = ref_vel / 2.24 * 3;
+
 					// Object search longitudinal direction
-					if ((check_car_s > car_s) && ((check_car_s - car_s) < 30))
+					if ((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
 					{
 						too_close = true;
-						if (ref_vel > check_speed * 2.24) {
-							ref_vel = check_speed * 2.24;
-						}
 						
+
+						if (ref_vel > check_speed * 2.24) {
+							target_velocity = check_speed * 2.24;
+						}
 
 						//if (lane > 0) {
 						//	lane = 0;
@@ -302,10 +307,14 @@ int main() {
 				}
 			}
 
+			std::cout << "Current Velocity " << ref_vel << std::endl;
+			std::cout << "Target Velocity " << target_velocity << std::endl;
+
 			// Vehicle velocity setting
 			if (too_close) {
-				//ref_vel -= 0.224;
-				
+				if (ref_vel > target_velocity) {
+					ref_vel -= 0.224;
+				}				
 			}
 			else if (ref_vel < 49.5) {
 				ref_vel += 0.224;
