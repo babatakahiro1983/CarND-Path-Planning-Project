@@ -201,7 +201,10 @@ int main() {
   	map_waypoints_dy.push_back(d_y);
   }
 
+  // Initial lane
   int lane = 1;
+
+  // Initial velocity
   double ref_vel = 0;
 
   h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &lane, &ref_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
@@ -226,7 +229,7 @@ int main() {
 		if (event == "telemetry") {
 			// j[1] is the data JSON object
 
-			  // Main car's localization Data
+			// Main car's localization Data
 			double car_x = j[1]["x"];
 			double car_y = j[1]["y"];
 			double car_s = j[1]["s"];
@@ -244,17 +247,23 @@ int main() {
 			// Sensor Fusion Data, a list of all other cars on the same side of the road.
 			auto sensor_fusion = j[1]["sensor_fusion"];
 
+			// Previous path size
 			int prev_size = previous_path_x.size();
+			std::cout << "Prev_size " << prev_size << std::endl;
 
+			// Set last point
 			if (prev_size > 0) {
 				car_s = end_path_s;
 			}
 
 			bool too_close = false;
 
+			// Object detection surround the vehicle
 			for (int i = 0; i < sensor_fusion.size(); i++) {
 
 				float d = sensor_fusion[i][6];
+				
+				// Object search lateral direction
 				if (d < (2 + 4 * lane + 2) && d >(2 + 4 * lane - 2))
 				{
 					double vx = sensor_fusion[i][3];
@@ -264,12 +273,21 @@ int main() {
 
 					check_car_s += ((double)prev_size * 0.02 * check_speed);
 
+					// Object search longitudinal direction
 					if ((check_car_s > car_s) && ((check_car_s - car_s) < 30))
 					{
-						//ref_vel = 29.5;
 						too_close = true;
 
-						if (lane > 0) {
+						if (lane == 0) {
+							lane = 1;
+						}
+						else if (lane == 1) {
+							lane = 2;
+						}
+						else if (lane == 2) {
+							lane = 0;
+						}
+						else{ 
 							lane = 0;
 						}
 					}
@@ -277,6 +295,7 @@ int main() {
 				}
 			}
 
+			// Vehicle velocity setting
 			if (too_close) {
 				ref_vel -= 0.224;
 			}
@@ -284,14 +303,16 @@ int main() {
 				ref_vel += 0.224;
 			}
 
-
+			// Way points
 			vector<double> ptsx;
 			vector<double> ptsy;
 
+			// Reference
 			double ref_x = car_x;
 			double ref_y = car_y;
 			double ref_yaw = deg2rad(car_yaw);
 
+			// Previous path is empty
 			if (prev_size < 2)
 			{
 				double prev_car_x = car_x - cos(car_yaw);
@@ -303,13 +324,18 @@ int main() {
 				ptsy.push_back(prev_car_y);
 				ptsy.push_back(car_y);
 			}
+			// Previous path has points
 			else
 			{
+				// Last point of previous path
 				ref_x = previous_path_x[prev_size - 1];
 				ref_y = previous_path_y[prev_size - 1];
 
+				// Second last point of previous path
 				double ref_x_prev = previous_path_x[prev_size - 2];
 				double ref_y_prev = previous_path_y[prev_size - 2];
+
+				// Calculation of yaw
 				ref_yaw = atan2(ref_y - ref_y_prev, ref_x - ref_x_prev);
 
 				ptsx.push_back(ref_x_prev);
@@ -319,6 +345,7 @@ int main() {
 				ptsy.push_back(ref_y);
 			}
 
+			// Points at 30,60,90m ahead of the car 
 			vector<double> next_wp0 = getXY(car_s + 30, (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
 			vector<double> next_wp1 = getXY(car_s + 60, (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
 			vector<double> next_wp2 = getXY(car_s + 90, (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
@@ -331,6 +358,7 @@ int main() {
 			ptsy.push_back(next_wp1[1]);
 			ptsy.push_back(next_wp2[1]);
 
+			// Transformation to local car cordinate
 			for (int i = 0; i < ptsx.size(); i++)
 			{
 				double shift_x = ptsx[i] - ref_x;
@@ -340,15 +368,17 @@ int main() {
 				ptsy[i] = (shift_x * sin(0 - ref_yaw) + shift_y * cos(0 - ref_yaw));
 			}
 
-
+			// Spline
 			tk::spline s;
 
+			// Set point to spline
 			s.set_points(ptsx, ptsy);
 
 
 			vector<double> next_x_vals;
 			vector<double> next_y_vals;
 
+			// Set previous path
 			for (int i = 0; i < previous_path_x.size(); i++)
 			{
 				next_x_vals.push_back(previous_path_x[i]);
@@ -361,9 +391,11 @@ int main() {
 
 			double x_add_on = 0;
 
+			double N = (target_dist / (0.02 * ref_vel / 2.24));
+
+			// Calculate path by using spline
 			for (int i = 1; i <= 50 - previous_path_x.size(); i++) 
 			{
-				double N = (target_dist / (0.02 * ref_vel / 2.24));
 				double x_point = x_add_on + target_x / N;
 				double y_point = s(x_point);
 
@@ -372,6 +404,7 @@ int main() {
 				double x_ref = x_point;
 				double y_ref = y_point;
 
+				// Transformation to global cordinate
 				x_point = (x_ref * cos(ref_yaw) - y_ref * sin(ref_yaw));
 				y_point = (x_ref * sin(ref_yaw) + y_ref * cos(ref_yaw));
 
@@ -382,17 +415,6 @@ int main() {
 				next_y_vals.push_back(y_point);
 			}
 
-			//       	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
-
-			//double dist_inc = 0.3;
-			//for (int i = 0; i < 50; i++)
-			//{
-			//	double next_s = car_s + (i + 1) * dist_inc;
-			//	double next_d = 6;
-			//	vector<double> xy = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			//	next_x_vals.push_back(xy[0]);
-			//	next_y_vals.push_back(xy[1]);
-			//}
 
 			json msgJson;
           	msgJson["next_x"] = next_x_vals;
