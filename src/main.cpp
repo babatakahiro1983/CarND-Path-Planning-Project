@@ -276,10 +276,11 @@ int main() {
 					if ((check_car_s > car_s) && ((check_car_s - car_s) < 30))
 					{
 						too_close = true;
+						ref_vel = check_speed;
 
-						if (lane > 0) {
-							lane = 0;
-						}
+						//if (lane > 0) {
+						//	lane = 0;
+						//}
 
 						//if (lane == 0) {
 						//	lane = 1;
@@ -300,7 +301,8 @@ int main() {
 
 			// Vehicle velocity setting
 			if (too_close) {
-				ref_vel -= 0.224;
+				//ref_vel -= 0.224;
+				
 			}
 			else if (ref_vel < 49.5) {
 				ref_vel += 0.224;
