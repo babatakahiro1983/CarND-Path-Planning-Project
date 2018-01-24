@@ -249,7 +249,6 @@ int main() {
 
 			// Previous path size
 			int prev_size = previous_path_x.size();
-			std::cout << "Prev_size " << prev_size << std::endl;
 
 			// Set last point
 			if (prev_size > 0) {
@@ -278,18 +277,22 @@ int main() {
 					{
 						too_close = true;
 
-						if (lane == 0) {
-							lane = 1;
-						}
-						else if (lane == 1) {
-							lane = 2;
-						}
-						else if (lane == 2) {
+						if (lane > 0) {
 							lane = 0;
 						}
-						else{ 
-							lane = 0;
-						}
+
+						//if (lane == 0) {
+						//	lane = 1;
+						//}
+						//else if (lane == 1) {
+						//	lane = 2;
+						//}
+						//else if (lane == 2) {
+						//	lane = 0;
+						//}
+						//else{ 
+						//	lane = 0;
+						//}
 					}
 
 				}
