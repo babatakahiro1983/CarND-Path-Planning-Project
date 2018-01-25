@@ -302,7 +302,7 @@ int main() {
 			if (too_close) {
 				if (ref_vel > target_velocity) {
 					ref_vel -= 0.224;
-					if (ref_vel - target_velocity > 10)
+					if (49.5 - target_velocity > 10)
 					{
 						lane_change = true;
 					}
