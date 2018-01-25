@@ -312,7 +312,19 @@ int main() {
 						// Object search lateral direction
 						if (d < (2 + 4 * 1 + 2) && d >(2 + 4 * 1 - 2))
 						{
-							vehicle_on_next_lane = true;
+							//vehicle_on_ego_lane = true;
+							double vx = sensor_fusion[i][3];
+							double vy = sensor_fusion[i][4];
+							double check_speed = sqrt(vx * vx + vy * vy);
+							double check_car_s = sensor_fusion[i][5];
+
+							check_car_s += ((double)prev_size * 0.02 * check_speed);
+
+							// Object search longitudinal direction
+							if ((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
+							{
+								vehicle_on_next_lane = true;
+							}
 						}
 					}
 					if (vehicle_on_next_lane == false) {
@@ -328,7 +340,19 @@ int main() {
 						// Object search lateral direction
 						if (d < (2 + 4 * 2 + 2) && d >(2 + 4 * 2 - 2))
 						{
-							vehicle_on_next_lane = true;
+							//vehicle_on_ego_lane = true;
+							double vx = sensor_fusion[i][3];
+							double vy = sensor_fusion[i][4];
+							double check_speed = sqrt(vx * vx + vy * vy);
+							double check_car_s = sensor_fusion[i][5];
+
+							check_car_s += ((double)prev_size * 0.02 * check_speed);
+
+							// Object search longitudinal direction
+							if ((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
+							{
+								vehicle_on_next_lane = true;
+							}
 						}
 					}
 					if (vehicle_on_next_lane == false) {
@@ -343,7 +367,19 @@ int main() {
 						// Object search lateral direction
 						if (d < (2 + 4 * 0 + 2) && d >(2 + 4 * 0 - 2))
 						{
-							vehicle_on_next_lane = true;
+							//vehicle_on_ego_lane = true;
+							double vx = sensor_fusion[i][3];
+							double vy = sensor_fusion[i][4];
+							double check_speed = sqrt(vx * vx + vy * vy);
+							double check_car_s = sensor_fusion[i][5];
+
+							check_car_s += ((double)prev_size * 0.02 * check_speed);
+
+							// Object search longitudinal direction
+							if ((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
+							{
+								vehicle_on_next_lane = true;
+							}
 						}
 					}
 					if (vehicle_on_next_lane == false) {
@@ -359,7 +395,19 @@ int main() {
 						// Object search lateral direction
 						if (d < (2 + 4 * 2 + 2) && d >(2 + 4 * 2 - 2))
 						{
-							vehicle_on_next_lane = true;
+							//vehicle_on_ego_lane = true;
+							double vx = sensor_fusion[i][3];
+							double vy = sensor_fusion[i][4];
+							double check_speed = sqrt(vx * vx + vy * vy);
+							double check_car_s = sensor_fusion[i][5];
+
+							check_car_s += ((double)prev_size * 0.02 * check_speed);
+
+							// Object search longitudinal direction
+							if ((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
+							{
+								vehicle_on_next_lane = true;
+							}
 						}
 					}
 					if (vehicle_on_next_lane == false) {
