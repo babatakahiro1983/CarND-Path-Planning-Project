@@ -290,18 +290,18 @@ int main() {
 						//	lane = 0;
 						//}
 
-						//if (lane == 0) {
-						//	lane = 1;
-						//}
-						//else if (lane == 1) {
-						//	lane = 2;
-						//}
-						//else if (lane == 2) {
-						//	lane = 0;
-						//}
-						//else{ 
-						//	lane = 0;
-						//}
+						if (lane == 0) {
+							lane = 1;
+						}
+						else if (lane == 1) {
+							lane = 2;
+						}
+						else if (lane == 2) {
+							lane = 0;
+						}
+						else{ 
+							lane = 0;
+						}
 					}
 
 				}
