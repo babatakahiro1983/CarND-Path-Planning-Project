@@ -258,6 +258,7 @@ int main() {
 
 			bool too_close = false;
 			bool lane_change = false;
+			//bool vehicle_on_ego_lane = false;
 			double target_velocity = ref_vel;
 
 			// Object detection surround the vehicle
@@ -268,6 +269,7 @@ int main() {
 				// Object search lateral direction
 				if (d < (2 + 4 * lane + 2) && d >(2 + 4 * lane - 2))
 				{
+					//vehicle_on_ego_lane = true;
 					double vx = sensor_fusion[i][3];
 					double vy = sensor_fusion[i][4];
 					double check_speed = sqrt(vx * vx + vy * vy);
@@ -282,14 +284,9 @@ int main() {
 					{
 						too_close = true;
 						
-
 						if (ref_vel > check_speed * 2.24) {
 							target_velocity = check_speed * 2.24;
 						}
-
-						//if (lane > 0) {
-						//	lane = 0;
-						//}
 					}
 
 				}
@@ -302,32 +299,77 @@ int main() {
 			if (too_close) {
 				if (ref_vel > target_velocity) {
 					ref_vel -= 0.224;
-					if (49.5 - target_velocity > 10)
-					{
-						lane_change = true;
+				}
+
+				bool vehicle_on_next_lane = false;
+
+				// Judge Lane change 
+				if (lane == 0) {
+					for (int i = 0; i < sensor_fusion.size(); i++) {
+
+						float d = sensor_fusion[i][6];
+
+						// Object search lateral direction
+						if (d < (2 + 4 * 1 + 2) && d >(2 + 4 * 1 - 2))
+						{
+							vehicle_on_next_lane = true;
+						}
 					}
-				}				
+					if (vehicle_on_next_lane == false) {
+						lane = 1;
+					}
+				}
+				else if (lane == 1) {
+					for (int i = 0; i < sensor_fusion.size(); i++) {
+
+						float d = sensor_fusion[i][6];
+
+						// Object search lateral direction
+						if (d < (2 + 4 * 2 + 2) && d >(2 + 4 * 2 - 2))
+						{
+							vehicle_on_next_lane = true;
+						}
+					}
+					if (vehicle_on_next_lane == false) {
+						lane = 2;
+					}
+
+					for (int i = 0; i < sensor_fusion.size(); i++) {
+
+						float d = sensor_fusion[i][6];
+
+						// Object search lateral direction
+						if (d < (2 + 4 * 0 + 2) && d >(2 + 4 * 0 - 2))
+						{
+							vehicle_on_next_lane = true;
+						}
+					}
+					if (vehicle_on_next_lane == false) {
+						lane = 0;
+					}
+				}
+				else {
+					for (int i = 0; i < sensor_fusion.size(); i++) {
+
+						float d = sensor_fusion[i][6];
+
+						// Object search lateral direction
+						if (d < (2 + 4 * 2 + 2) && d >(2 + 4 * 2 - 2))
+						{
+							vehicle_on_next_lane = true;
+						}
+					}
+					if (vehicle_on_next_lane == false) {
+						lane = 2;
+					}
+				}
+
+
+
 			}
 			else if (ref_vel < 49.5) {
 				ref_vel += 0.224;
 			}
-
-
-			if(lane_change){
-				if (lane == 0) {
-					lane = 1;
-				}
-				else if (lane == 1) {
-					lane = 0;
-				}
-				else if (lane == 2) {
-					lane = 1;
-				}
-				else {
-					lane = 0;
-				}
-			}
-
 
 			// Way points
 			vector<double> ptsx;
