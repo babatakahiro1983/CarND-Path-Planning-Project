@@ -354,7 +354,7 @@ int main() {
 
 							// Object search longitudinal direction
 							if (((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
-							||  ((check_car_s < car_s) && ((check_car_s - car_s) < 10)))
+							||  ((check_car_s < car_s) && ((car_s - check_car_s) < 10)))
 							{
 								vehicle_on_next_lane = true;
 							}
@@ -385,7 +385,7 @@ int main() {
 
 							// Object search longitudinal direction
 							if (((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
-							||  ((check_car_s < car_s) && ((check_car_s - car_s) < 10)))
+							|| ((check_car_s < car_s) && ((car_s - check_car_s) < 10)))
 							{
 								vehicle_on_next_lane = true;
 							}
@@ -413,7 +413,7 @@ int main() {
 
 							// Object search longitudinal direction
 							if (((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
-							||  ((check_car_s < car_s) && ((check_car_s - car_s) < 10)))
+							|| ((check_car_s < car_s) && ((car_s - check_car_s) < 10)))
 							{
 								vehicle_on_next_lane = true;
 							}
@@ -443,7 +443,7 @@ int main() {
 
 							// Object search longitudinal direction
 							if (((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
-							||  ((check_car_s < car_s) && ((check_car_s - car_s) < 10)))
+							|| ((check_car_s < car_s) && ((car_s - check_car_s) < 10)))
 							{
 								vehicle_on_next_lane = true;
 							}
