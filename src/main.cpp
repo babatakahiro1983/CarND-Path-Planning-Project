@@ -165,6 +165,39 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s, const vec
 
 }
 
+// 
+//int check_next_lane(int prev_size,  sensor_fusion, double car_s, double target_distance, int check_lane_num) {
+//
+//	bool vehicle_on_next_lane = false;
+//
+//	for (int i = 0; i < sensor_fusion.size(); i++) {
+//
+//		float d = sensor_fusion[i][6];
+//
+//		// Object search lateral direction
+//		if (d < (2 + 4 * check_lane_num + 2) && d >(2 + 4 * check_lane_num - 2))
+//		{
+//			//vehicle_on_ego_lane = true;
+//			double vx = sensor_fusion[i][3];
+//			double vy = sensor_fusion[i][4];
+//			double check_speed = sqrt(vx * vx + vy * vy);
+//			double check_car_s = sensor_fusion[i][5];
+//
+//			check_car_s += ((double)prev_size * 0.02 * check_speed);
+//
+//			// Object search longitudinal direction
+//			if ((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
+//			{
+//				vehicle_on_next_lane = true;
+//			}
+//		}
+//	}
+//	if (vehicle_on_next_lane == false) {
+//		return check_lane_num;
+//	}
+//}
+
+
 int main() {
   uWS::Hub h;
 
@@ -393,7 +426,7 @@ int main() {
 						float d = sensor_fusion[i][6];
 
 						// Object search lateral direction
-						if (d < (2 + 4 * 2 + 2) && d >(2 + 4 * 2 - 2))
+						if (d < (2 + 4 * 1 + 2) && d >(2 + 4 * 1 - 2))
 						{
 							//vehicle_on_ego_lane = true;
 							double vx = sensor_fusion[i][3];
@@ -411,7 +444,7 @@ int main() {
 						}
 					}
 					if (vehicle_on_next_lane == false) {
-						lane = 2;
+						lane = 1;
 					}
 					std::cout << "Vehicle_on_next_lane:" << vehicle_on_next_lane << std::endl;
 				}
