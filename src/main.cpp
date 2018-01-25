@@ -258,8 +258,8 @@ int main() {
 
 			bool too_close = false;
 			bool lane_change = false;
-			//bool vehicle_on_ego_lane = false;
 			double target_velocity = ref_vel;
+			double target_distance = ref_vel / 2.24 * 3;
 
 			// Object detection surround the vehicle
 			for (int i = 0; i < sensor_fusion.size(); i++) {
@@ -277,8 +277,6 @@ int main() {
 
 					check_car_s += ((double)prev_size * 0.02 * check_speed);
 
-					double target_distance = ref_vel / 2.24 * 3;
-
 					// Object search longitudinal direction
 					if ((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
 					{
@@ -292,8 +290,10 @@ int main() {
 				}
 			}
 
-			std::cout << "Current Velocity " << ref_vel << std::endl;
-			std::cout << "Target Velocity " << target_velocity << std::endl;
+			std::cout << "Current Velocity:" << ref_vel << std::endl;
+			std::cout << "Target Velocity:" << target_velocity << std::endl;
+			std::cout << "too_close:" << too_close << std::endl;
+			std::cout << "Current lane:" << lane << std::endl;
 
 			// Vehicle velocity adjesting
 			if (too_close) {
@@ -318,6 +318,7 @@ int main() {
 					if (vehicle_on_next_lane == false) {
 						lane = 1;
 					}
+					std::cout << "Vehicle_on_next_lane:" << vehicle_on_next_lane << std::endl;
 				}
 				else if (lane == 1) {
 					for (int i = 0; i < sensor_fusion.size(); i++) {
@@ -333,6 +334,7 @@ int main() {
 					if (vehicle_on_next_lane == false) {
 						lane = 2;
 					}
+					std::cout << "Vehicle_on_next_lane:" << vehicle_on_next_lane << std::endl;
 
 					for (int i = 0; i < sensor_fusion.size(); i++) {
 
@@ -347,6 +349,7 @@ int main() {
 					if (vehicle_on_next_lane == false) {
 						lane = 0;
 					}
+					std::cout << "Vehicle_on_next_lane:" << vehicle_on_next_lane << std::endl;
 				}
 				else {
 					for (int i = 0; i < sensor_fusion.size(); i++) {
@@ -362,14 +365,14 @@ int main() {
 					if (vehicle_on_next_lane == false) {
 						lane = 2;
 					}
+					std::cout << "Vehicle_on_next_lane:" << vehicle_on_next_lane << std::endl;
 				}
-
-
-
 			}
 			else if (ref_vel < 49.5) {
 				ref_vel += 0.224;
 			}
+
+			std::cout << "Target lane:" << lane << std::endl;
 
 			// Way points
 			vector<double> ptsx;
