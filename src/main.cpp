@@ -257,6 +257,7 @@ int main() {
 			}
 
 			bool too_close = false;
+			bool lane_change = false;
 			double target_velocity = ref_vel;
 
 			// Object detection surround the vehicle
@@ -289,19 +290,6 @@ int main() {
 						//if (lane > 0) {
 						//	lane = 0;
 						//}
-
-						if (lane == 0) {
-							lane = 1;
-						}
-						else if (lane == 1) {
-							lane = 2;
-						}
-						else if (lane == 2) {
-							lane = 0;
-						}
-						else{ 
-							lane = 0;
-						}
 					}
 
 				}
@@ -310,15 +298,36 @@ int main() {
 			std::cout << "Current Velocity " << ref_vel << std::endl;
 			std::cout << "Target Velocity " << target_velocity << std::endl;
 
-			// Vehicle velocity setting
+			// Vehicle velocity adjesting
 			if (too_close) {
 				if (ref_vel > target_velocity) {
 					ref_vel -= 0.224;
+					if (ref_vel - target_velocity > 10)
+					{
+						lane_change = true;
+					}
 				}				
 			}
 			else if (ref_vel < 49.5) {
 				ref_vel += 0.224;
 			}
+
+
+			if(lane_change){
+				if (lane == 0) {
+					lane = 1;
+				}
+				else if (lane == 1) {
+					lane = 0;
+				}
+				else if (lane == 2) {
+					lane = 1;
+				}
+				else {
+					lane = 0;
+				}
+			}
+
 
 			// Way points
 			vector<double> ptsx;
