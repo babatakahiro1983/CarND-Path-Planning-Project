@@ -310,7 +310,7 @@ int main() {
 
 					check_car_s += ((double)prev_size * 0.02 * check_speed);
 
-					// Object search longitudinal direction
+					// Object search longitudinal direction and set target_velocity
 					if ((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
 					{
 						too_close = true;
@@ -323,21 +323,20 @@ int main() {
 				}
 			}
 
-			std::cout << "Current Velocity:" << ref_vel << std::endl;
-			std::cout << "Target Velocity:" << target_velocity << std::endl;
-			std::cout << "too_close:" << too_close << std::endl;
-			std::cout << "Current lane:" << lane << std::endl;
-
-			// Vehicle velocity adjesting
+			// Adjest vehicle velocity
 			if (too_close) {
+
+				// Deceleration
 				if (ref_vel > target_velocity) {
 					ref_vel -= 0.224;
 				}
 
 				bool vehicle_on_next_lane = false;
 
-				// Judge Lane change 
+				// Judge possibility of lane change 
+				// when vehicle in on lane 0
 				if (lane == 0) {
+					// check lane 1
 					for (int i = 0; i < sensor_fusion.size(); i++) {
 
 						float d = sensor_fusion[i][6];
@@ -354,7 +353,8 @@ int main() {
 							check_car_s += ((double)prev_size * 0.02 * check_speed);
 
 							// Object search longitudinal direction
-							if ((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
+							if (((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
+							||  ((check_car_s < car_s) && ((check_car_s - car_s) < 10)))
 							{
 								vehicle_on_next_lane = true;
 							}
@@ -363,36 +363,11 @@ int main() {
 					if (vehicle_on_next_lane == false) {
 						lane = 1;
 					}
-					std::cout << "Vehicle_on_next_lane:" << vehicle_on_next_lane << std::endl;
 				}
+				// when vehicle in on lane 1
 				else if (lane == 1) {
-					for (int i = 0; i < sensor_fusion.size(); i++) {
 
-						float d = sensor_fusion[i][6];
-
-						// Object search lateral direction
-						if (d < (2 + 4 * 2 + 2) && d >(2 + 4 * 2 - 2))
-						{
-							//vehicle_on_ego_lane = true;
-							double vx = sensor_fusion[i][3];
-							double vy = sensor_fusion[i][4];
-							double check_speed = sqrt(vx * vx + vy * vy);
-							double check_car_s = sensor_fusion[i][5];
-
-							check_car_s += ((double)prev_size * 0.02 * check_speed);
-
-							// Object search longitudinal direction
-							if ((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
-							{
-								vehicle_on_next_lane = true;
-							}
-						}
-					}
-					if (vehicle_on_next_lane == false) {
-						lane = 2;
-					}
-					std::cout << "Vehicle_on_next_lane:" << vehicle_on_next_lane << std::endl;
-
+					// check lane 0
 					for (int i = 0; i < sensor_fusion.size(); i++) {
 
 						float d = sensor_fusion[i][6];
@@ -409,7 +384,8 @@ int main() {
 							check_car_s += ((double)prev_size * 0.02 * check_speed);
 
 							// Object search longitudinal direction
-							if ((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
+							if (((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
+							||  ((check_car_s < car_s) && ((check_car_s - car_s) < 10)))
 							{
 								vehicle_on_next_lane = true;
 							}
@@ -418,9 +394,38 @@ int main() {
 					if (vehicle_on_next_lane == false) {
 						lane = 0;
 					}
-					std::cout << "Vehicle_on_next_lane:" << vehicle_on_next_lane << std::endl;
+
+					// check lane 2
+					for (int i = 0; i < sensor_fusion.size(); i++) {
+
+						float d = sensor_fusion[i][6];
+
+						// Object search lateral direction
+						if (d < (2 + 4 * 2 + 2) && d >(2 + 4 * 2 - 2))
+						{
+							//vehicle_on_ego_lane = true;
+							double vx = sensor_fusion[i][3];
+							double vy = sensor_fusion[i][4];
+							double check_speed = sqrt(vx * vx + vy * vy);
+							double check_car_s = sensor_fusion[i][5];
+
+							check_car_s += ((double)prev_size * 0.02 * check_speed);
+
+							// Object search longitudinal direction
+							if (((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
+							||  ((check_car_s < car_s) && ((check_car_s - car_s) < 10)))
+							{
+								vehicle_on_next_lane = true;
+							}
+						}
+					}
+					if (vehicle_on_next_lane == false) {
+						lane = 2;
+					}
 				}
+				// when vehicle in on lane 2
 				else {
+					// check lane 1
 					for (int i = 0; i < sensor_fusion.size(); i++) {
 
 						float d = sensor_fusion[i][6];
@@ -437,7 +442,8 @@ int main() {
 							check_car_s += ((double)prev_size * 0.02 * check_speed);
 
 							// Object search longitudinal direction
-							if ((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
+							if (((check_car_s > car_s) && ((check_car_s - car_s) < target_distance))
+							||  ((check_car_s < car_s) && ((check_car_s - car_s) < 10)))
 							{
 								vehicle_on_next_lane = true;
 							}
@@ -446,14 +452,11 @@ int main() {
 					if (vehicle_on_next_lane == false) {
 						lane = 1;
 					}
-					std::cout << "Vehicle_on_next_lane:" << vehicle_on_next_lane << std::endl;
 				}
 			}
 			else if (ref_vel < 49.5) {
 				ref_vel += 0.224;
 			}
-
-			std::cout << "Target lane:" << lane << std::endl;
 
 			// Way points
 			vector<double> ptsx;
